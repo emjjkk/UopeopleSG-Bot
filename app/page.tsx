@@ -27,7 +27,7 @@ export default function Index() {
   // Feel free to remove this also and start afresh to build the web homepage of your own bot.
   return (
   <>
-    <main className="w-full h-screen flex flex-col items-center justify-center px-32">
+    <main className="w-full h-screen flex flex-col items-center justify-center text-center max-w-screen px-5 md:px-32">
       <h1 className="text-2xl mb-1 font-bold">UoPeopleSG Bot</h1>
       <p className="text-md">General-purpose utility bot specifically for the UoPeople Study Group discord server. Invite link:</p>
       <a className="text-sm text-purple-500 mb-3" href={inviteUrl}>{inviteUrl}</a>
