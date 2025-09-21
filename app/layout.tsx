@@ -8,8 +8,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Discord Bot Starter Template",
-  description: "The fastest way to build Discord bots with Next.js and Supabase",
+  title: "UoPeopleSG Bot",
+  description: "",
 };
 
 const geistSans = Geist({

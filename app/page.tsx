@@ -25,5 +25,14 @@ export default function Index() {
 
   // And then we conditionally render page content accordingly to the test above, with steps to help you get started.
   // Feel free to remove this also and start afresh to build the web homepage of your own bot.
-  return (<>{isDevelopment ? (<Development inviteUrl={inviteUrl}/>) : (<Example inviteUrl={inviteUrl}/>)}</>)
+  return (
+  <>
+    <main className="w-full h-screen flex flex-col items-center justify-center px-32">
+      <h1 className="text-2xl mb-1 font-bold">UoPeopleSG Bot</h1>
+      <p className="text-md">General-purpose utility bot specifically for the UoPeople Study Group discord server. Invite link:</p>
+      <a className="text-sm text-purple-500 mb-3" href={inviteUrl}>{inviteUrl}</a>
+      <p className="text-sm">Status: Online</p>
+    </main>
+  </>
+  )
 }
