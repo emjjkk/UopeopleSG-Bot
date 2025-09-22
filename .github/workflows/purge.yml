@@ -2,7 +2,10 @@ name: Scheduled Purge
 
 on:
   schedule:
-    - cron: "0 3 * * *" # run daily at 3am UTC
+    # Midnight (GMT-5 → 05:00 UTC)
+    - cron: "0 5 * * *"
+    # Midday (GMT-5 → 17:00 UTC)
+    - cron: "0 17 * * *"
   workflow_dispatch:
 
 jobs:
@@ -14,4 +17,4 @@ jobs:
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{"channel_id":"838466787921362964"}' \
-            https://your-vercel-app.vercel.app/api/purge
+            https://https://uopeople-sg-bot.vercel.app/api/purge
