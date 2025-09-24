@@ -5,6 +5,16 @@ const client = new Client({intents: [GatewayIntentBits.GuildMembers]});
 
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
+
+  client.user?.setPresence({
+    status: 'online', // 'online', 'idle', 'dnd', 'invisible'
+    activities: [
+      {
+        name: 'UoPeople Study Group',
+        type: ActivityType.Watching, // Playing, Listening, Watching, Competing
+      },
+    ],
+  });
 });
 
 client.on("guildMemberAdd", async (member) => {
