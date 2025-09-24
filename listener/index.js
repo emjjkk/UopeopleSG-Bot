@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, ActivityType  } from "discord.js";
 import fetch from "node-fetch";
 
 const client = new Client({intents: [GatewayIntentBits.GuildMembers]});
