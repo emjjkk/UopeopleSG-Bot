@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const CHANNEL_ID = '812056538650378311';
 const BOT_TOKEN = process.env.NEXT_PUBLIC_DISCORD_TOKEN!;
 
-export async function POST(req: { json: () => any; }) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { username, userId } = body;
