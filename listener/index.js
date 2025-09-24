@@ -10,7 +10,7 @@ client.once("ready", () => {
     status: 'online', // 'online', 'idle', 'dnd', 'invisible'
     activities: [
       {
-        name: 'UoPeople Study Group',
+        name: 'Frosty try to make tea',
         type: ActivityType.Watching, // Playing, Listening, Watching, Competing
       },
     ],
