@@ -59,34 +59,14 @@ async function getLatestPress() {
 }
 
 async function postToDiscord(press: { url: string; title: string; image: string | null; content: string | null }) {
-  // Discord messages have a 2000 character limit
-  const MAX_MESSAGE_LENGTH = 1900 // Leave some room for formatting
+  // Build the initial message with header info
+  let headerMessage = `## 🗞️ New Press Release from University of the People\n\n`
+  headerMessage += `# ${press.title}\n\n`
+  headerMessage += `🔗 **[Read the full article here](${press.url})**`
   
-  // Build the markdown message
-  let message = `# 🗞️ New Press Release from University of the People\n\n`
-  message += `## ${press.title}\n\n`
-  message += `🔗 **[Read the full article here](${press.url})**\n\n`
-  
-  if (press.image) {
-    message += `${press.image}\n\n`
-  }
-  
-  if (press.content) {
-    message += `---\n\n`
-    let articleContent = press.content
-    
-    // Calculate remaining space for content
-    const currentLength = message.length
-    const remainingSpace = MAX_MESSAGE_LENGTH - currentLength
-    
-    // Truncate if too long
-    if (articleContent.length > remainingSpace - 10) {
-      articleContent = articleContent.substring(0, remainingSpace - 13) + "..."
-    }
-    
-    message += articleContent
-  }
+  headerMessage += `---`
 
+  // Send the header message first
   await fetch(`https://discord.com/api/v10/channels/${CHANNEL_ID}/messages`, {
     method: "POST",
     headers: {
@@ -94,9 +74,37 @@ async function postToDiscord(press: { url: string; title: string; image: string 
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      content: message
+      content: headerMessage
     })
   })
+
+  // Send the full content in chunks if it exists
+  if (press.content) {
+    const CHUNK_SIZE = 1950 // Discord's 2000 char limit with some buffer
+    const contentChunks = []
+    
+    // Split content into chunks that fit Discord's message limit
+    for (let i = 0; i < press.content.length; i += CHUNK_SIZE) {
+      contentChunks.push(press.content.substring(i, i + CHUNK_SIZE))
+    }
+    
+    // Send each chunk as a separate message
+    for (const chunk of contentChunks) {
+      await fetch(`https://discord.com/api/v10/channels/${CHANNEL_ID}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bot ${BOT_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: chunk
+        })
+      })
+      
+      // Add a small delay between messages to avoid rate limits
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
 }
 
 export async function GET(req: Request) {
