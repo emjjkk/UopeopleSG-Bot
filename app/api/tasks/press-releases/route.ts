@@ -60,11 +60,11 @@ async function getLatestPress() {
 
 async function postToDiscord(press: { url: string; title: string; image: string | null; content: string | null }) {
   // Build the initial message with header info
-  let headerMessage = `## 🗞️ New Press Release from University of the People\n\n`
-  headerMessage += `# ${press.title}\n\n`
-  headerMessage += `🔗 **[Read the full article here](${press.url})**`
+  let headerMessage = `## New Press Release from University of the People\n`
+  headerMessage += `# ${press.title}\n`
+  headerMessage += `**[Read the full article here](${press.url})**\n`
   
-  headerMessage += `---`
+  headerMessage += `---\n`
 
   // Send the header message first
   await fetch(`https://discord.com/api/v10/channels/${CHANNEL_ID}/messages`, {
