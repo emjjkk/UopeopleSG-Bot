@@ -9,23 +9,35 @@ async function getLatestPress() {
   const html = await res.text()
   const $ = cheerio.load(html)
 
-  // Select the first press release block
   const first = $(".fl-post-grid-post").first()
 
-  // Title + link
   const title = first.find(".fl-post-title a").text().trim()
   let url = first.find(".fl-post-title a").attr("href") || ""
   if (url && !url.startsWith("http")) {
     url = `https://www.uopeople.edu${url}`
   }
 
-  // Image
-  let image = first.find(".fl-post-image img").attr("src") || null
-  if (image && !image.startsWith("http")) {
-    image = `https://www.uopeople.edu${image}`
-  }
-
   if (!title || !url) return null
+
+  // 🔎 Step 2: fetch the article page to get its featured image
+  let image: string | null = null
+  try {
+    const articleRes = await fetch(url)
+    const articleHtml = await articleRes.text()
+    const $$ = cheerio.load(articleHtml)
+
+    // Try common featured image selectors
+    image =
+      $$("meta[property='og:image']").attr("content") || // best option
+      $$(".fl-post-content img").first().attr("src") ||
+      null
+
+    if (image && !image.startsWith("http")) {
+      image = `https://www.uopeople.edu${image}`
+    }
+  } catch (e) {
+    console.error("Failed to fetch article image:", e)
+  }
 
   return { url, title, image }
 }
@@ -40,10 +52,11 @@ async function postToDiscord(press: { url: string; title: string; image: string 
     body: JSON.stringify({
       embeds: [
         {
-          title: press.title,
+          title: "New press release from University of the People",
           url: press.url,
-          image: press.image ? { url: press.image } : undefined,
-          color: 0xaa00ff
+          description: `## ${press.title}`,
+          thumbnail: press.image ? { url: press.image } : undefined,
+          color: 0x0099ff
         }
       ]
     })
