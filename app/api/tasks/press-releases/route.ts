@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import * as cheerio from "cheerio"
 
-const CHANNEL_ID = "1339221565354545216"
+const CHANNEL_ID = "1420661886906662922"
 const BOT_TOKEN = process.env.NEXT_PUBLIC_DISCORD_TOKEN!
 
 async function getLatestPress() {
