@@ -1,23 +1,33 @@
-// app/api/press-releases/route.ts
 import { NextResponse } from "next/server"
+import * as cheerio from "cheerio"
 
-const CHANNEL_ID = '1339221565354545216'
+const CHANNEL_ID = "1339221565354545216"
 const BOT_TOKEN = process.env.NEXT_PUBLIC_DISCORD_TOKEN!
 
 async function getLatestPress() {
-  const res = await fetch("https://www.uopeople.edu/about/worldwide-recognition/press/")
+  const res = await fetch("https://www.uopeople.edu/about/worldwide-recognition/press-releases/")
   const html = await res.text()
+  const $ = cheerio.load(html)
 
-  // Grab first press release link + title + image
-  const linkMatch = html.match(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/)
-  const imgMatch = html.match(/<img[^>]+src="([^"]+)"/)
+  // Select the first press release block
+  const first = $(".fl-post-grid-post").first()
 
-  if (!linkMatch) return null
-  return {
-    url: linkMatch[1].startsWith("http") ? linkMatch[1] : `https://www.uopeople.edu${linkMatch[1]}`,
-    title: linkMatch[2].trim(),
-    image: imgMatch ? imgMatch[1] : null
+  // Title + link
+  const title = first.find(".fl-post-title a").text().trim()
+  let url = first.find(".fl-post-title a").attr("href") || ""
+  if (url && !url.startsWith("http")) {
+    url = `https://www.uopeople.edu${url}`
   }
+
+  // Image
+  let image = first.find(".fl-post-image img").attr("src") || null
+  if (image && !image.startsWith("http")) {
+    image = `https://www.uopeople.edu${image}`
+  }
+
+  if (!title || !url) return null
+
+  return { url, title, image }
 }
 
 async function postToDiscord(press: { url: string; title: string; image: string | null }) {
@@ -33,7 +43,7 @@ async function postToDiscord(press: { url: string; title: string; image: string 
           title: press.title,
           url: press.url,
           image: press.image ? { url: press.image } : undefined,
-          color: 0x0099ff
+          color: 0xaa00ff
         }
       ]
     })
