@@ -59,21 +59,32 @@ async function getLatestPress() {
 }
 
 async function postToDiscord(press: { url: string; title: string; image: string | null; content: string | null }) {
-  // Discord embed description has a 4096 character limit
-  const MAX_DESCRIPTION_LENGTH = 4000 // Leave some room for the title formatting
+  // Discord messages have a 2000 character limit
+  const MAX_MESSAGE_LENGTH = 1900 // Leave some room for formatting
   
-  let description = `## ${press.title}`
+  // Build the markdown message
+  let message = `# 🗞️ New Press Release from University of the People\n\n`
+  message += `## ${press.title}\n\n`
+  message += `🔗 **[Read the full article here](${press.url})**\n\n`
+  
+  if (press.image) {
+    message += `${press.image}\n\n`
+  }
   
   if (press.content) {
-    // Add content with some formatting
+    message += `---\n\n`
     let articleContent = press.content
     
+    // Calculate remaining space for content
+    const currentLength = message.length
+    const remainingSpace = MAX_MESSAGE_LENGTH - currentLength
+    
     // Truncate if too long
-    if (articleContent.length > MAX_DESCRIPTION_LENGTH - description.length - 10) {
-      articleContent = articleContent.substring(0, MAX_DESCRIPTION_LENGTH - description.length - 13) + "..."
+    if (articleContent.length > remainingSpace - 10) {
+      articleContent = articleContent.substring(0, remainingSpace - 13) + "..."
     }
     
-    description += `\n\n${articleContent}`
+    message += articleContent
   }
 
   await fetch(`https://discord.com/api/v10/channels/${CHANNEL_ID}/messages`, {
@@ -83,15 +94,7 @@ async function postToDiscord(press: { url: string; title: string; image: string 
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      embeds: [
-        {
-          title: "New press release from University of the People",
-          url: press.url,
-          description: description,
-          thumbnail: press.image ? { url: press.image } : undefined,
-          color: 0x0099ff
-        }
-      ]
+      content: message
     })
   })
 }
